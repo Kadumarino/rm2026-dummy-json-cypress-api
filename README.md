@@ -17,8 +17,6 @@ npm install
 # Executar testes
 npx cypress run
 
-# Gerar planilha de testes
-npm run gerar:planilha
 ```
 
 **Relatório:** `cypress/reports/index.html`
