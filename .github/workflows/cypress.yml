@@ -38,15 +38,64 @@ jobs:
         run: npx cypress run --spec "${{ matrix.spec }}"
         continue-on-error: true
 
-      - name: Listar arquivos do diretório de reports
-        run: |
-          echo "Arquivos em cypress/reports:"
-          ls -lh cypress/reports || echo "Diretório não encontrado"
+      - name: Renomear JSON para identificação única
+        run: mv cypress/reports/index.json cypress/reports/report-${{ strategy.job-index }}.json
         if: always()
 
-      - name: Salvar relatório como artefato
+      - name: Salvar arquivos JSON como artefatos
         uses: actions/upload-artifact@v4
         with:
-          name: mochawesome-report-${{ strategy.job-index }}
-          path: cypress/reports/
+          name: mochawesome-json-${{ strategy.job-index }}
+          path: cypress/reports/report-${{ strategy.job-index }}.json
+        if: always()
+
+  merge-reports:
+    runs-on: ubuntu-latest
+    needs: cypress-run
+    if: always()
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Baixar todos os relatórios JSON
+        uses: actions/download-artifact@v4
+        with:
+          pattern: mochawesome-json-*
+          path: cypress/reports/json-parts
+          merge-multiple: true
+
+      - name: Listar JSONs baixados
+        run: |
+          echo "Arquivos JSON baixados:"
+          find cypress/reports/json-parts -name "*.json" -type f
+        if: always()
+
+      - name: Mesclar relatórios JSON
+        run: npx mochawesome-merge cypress/reports/json-parts/*.json -o cypress/reports/merged-report.json
+
+      - name: Gerar relatório HTML consolidado
+        run: npx marge cypress/reports/merged-report.json -f relatorio-consolidado -o cypress/reports --reportTitle "Relatório Consolidado - DummyJSON API" --reportPageTitle "Cypress Tests - DummyJSON API" --inline --charts
+
+      - name: Listar relatório final
+        run: |
+          echo "Relatório final gerado:"
+          ls -lh cypress/reports/*.html
+        if: always()
+
+      - name: Salvar relatório consolidado
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-consolidado
+          path: |
+            cypress/reports/relatorio-consolidado.html
+          retention-days: 30
         if: always()
