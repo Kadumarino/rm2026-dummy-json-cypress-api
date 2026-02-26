@@ -1,0 +1,25 @@
+[
+
+{
+	"id" : 200,
+	"firstName": "Carlos",
+	"lastName": "Silva",
+	"maidenName": "Santos",
+	"age": 30,
+	"gender": "male",
+	"email": "carlos.silva@email.com",
+	"phone": "+55 11 98765-4321",
+	"username": "carlos.silva",
+	"password": "senha123",
+	"birthDate": "1996-02-24",
+	"image": "https://dummyjson.com/icon/carlossilva/128",
+	"bloodGroup": "O+",
+	"height": 175,
+	"weight": 75.5,
+	"eyeColor": "Brown",
+	"hair": {
+		"color": "Black",
+		"type": "Straight"
+	}
+}
+]
