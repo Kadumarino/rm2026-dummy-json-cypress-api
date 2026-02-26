@@ -6,3 +6,6 @@ cypress/reports/videos
 cypress/reports/.jsons
 cypress/reports/*.html
 cypress/reports/*.json
+
+# Planilhas geradas
+*.xlsx
